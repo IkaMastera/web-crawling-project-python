@@ -12,6 +12,25 @@ def fetch_page(url):
         print(f"Request failed: {e}")
         return None
 
+def fetch_email(details_url):
+    try:
+        print(f"Fetching email from {details_url}")
+        response = requests.get(details_url)
+        response.raise_for_status() 
+
+        details_soup = BeautifulSoup(response.text, 'html.parser')
+        email_link = details_soup.select_one('a[href^="mailto:"]')
+        if email_link:
+            email_address = email_link['href'].replace('mailto:', '')  # Extract email
+            return email_address
+        else:
+            return "No email found"
+    except requests.exceptions.RequestException as e:
+        print(f"Request failed for {details_url}: {e}")
+        return "Request failed"
+
+    time.sleep(0.1)
+
 def parse_html(html):
     soup = BeautifulSoup(html, 'html.parser')
     table_rows = soup.find_all('tr')[1:]
